@@ -1,0 +1,32 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+  
+[build.environment]
+  # Prevent Netlify from installing dependencies with npm ci
+  NPM_FLAGS = "--no-optional"
+  NODE_VERSION = "18"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Handle SPA fallback for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+  conditions = {Role = ["anonymous"]}
+
+# Ensure API routes work correctly
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/nextjs-api/:splat"
+  status = 200
+
+# For handling dynamic routes
+[[redirects]]
+  from = "/_next/data/*"
+  to = "/_next/data/:splat"
+  status = 200
+

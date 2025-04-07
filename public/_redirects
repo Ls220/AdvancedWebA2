@@ -1,0 +1,7 @@
+# Netlify redirects file
+# Fallback for client-side routing
+/*    /index.html   200
+
+# API routes
+/api/*  /.netlify/functions/nextjs-api/:splat  200
+
