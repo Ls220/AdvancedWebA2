@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { Users, Package, LogOut } from 'lucide-react'
 import { fetchFromAPI } from '@/lib/api'
@@ -32,14 +32,16 @@ export default function AdminDashboard() {
         <div className="container mx-auto">
           <div className="flex items-center justify-between h-16">
             <h1 className="text-xl font-bold text-white">Admin Dashboard</h1>
-            <Button
-              variant="ghost"
-              className="text-white hover:bg-white/20"
+            <button
+              className={buttonVariants({
+                variant: "ghost",
+                className: "text-white hover:bg-white/20"
+              })}
               onClick={handleLogout}
             >
               <LogOut className="w-5 h-5 mr-2" />
               Logout
-            </Button>
+            </button>
           </div>
         </div>
       </nav>
@@ -50,26 +52,30 @@ export default function AdminDashboard() {
           <div className="md:col-span-1">
             <div className="backdrop-blur-md bg-white/10 rounded-lg border border-white/20 p-4">
               <div className="space-y-2">
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start text-white hover:bg-white/20 ${
-                    activeTab === 'users' ? 'bg-white/20' : ''
-                  }`}
+                <button
+                  className={buttonVariants({
+                    variant: "ghost",
+                    className: `w-full justify-start text-white hover:bg-white/20 ${
+                      activeTab === 'users' ? 'bg-white/20' : ''
+                    }`
+                  })}
                   onClick={() => setActiveTab('users')}
                 >
                   <Users className="w-5 h-5 mr-2" />
                   Users
-                </Button>
-                <Button
-                  variant="ghost"
-                  className={`w-full justify-start text-white hover:bg-white/20 ${
-                    activeTab === 'stock' ? 'bg-white/20' : ''
-                  }`}
+                </button>
+                <button
+                  className={buttonVariants({
+                    variant: "ghost",
+                    className: `w-full justify-start text-white hover:bg-white/20 ${
+                      activeTab === 'stock' ? 'bg-white/20' : ''
+                    }`
+                  })}
                   onClick={() => setActiveTab('stock')}
                 >
                   <Package className="w-5 h-5 mr-2" />
                   Stock
-                </Button>
+                </button>
               </div>
             </div>
           </div>

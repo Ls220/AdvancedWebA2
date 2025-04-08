@@ -79,6 +79,9 @@ export default function Navbar() {
                 </Button>
               </Link>
             )}
+            <Link href="/profile" className="transition-colors hover:text-foreground/80">
+              <User className="h-6 w-6" />
+            </Link>
             <Link href="/cart">
               <Button
                 variant="ghost"

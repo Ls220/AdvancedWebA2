@@ -72,7 +72,7 @@ export default function CartPage() {
           
           <div className="space-y-6">
             {items.map((item) => (
-              <Card key={item._id} className="overflow-hidden">
+              <Card key={item.id} className="overflow-hidden">
                 <CardContent className="p-4">
                   <div className="flex gap-6">
                     <div className="w-32 h-32">
@@ -88,7 +88,7 @@ export default function CartPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         >
                           -
                         </Button>
@@ -96,14 +96,14 @@ export default function CartPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         >
                           +
                         </Button>
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => removeItem(item._id)}
+                          onClick={() => removeItem(item.id)}
                         >
                           Remove
                         </Button>
