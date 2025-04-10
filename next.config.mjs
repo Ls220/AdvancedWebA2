@@ -13,19 +13,9 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
-  experimental: {
-    serverActions: true
-  },
+  output: "export",{
 }
+
 
 if (userConfig) {
   // ESM imports will have a "default" property
