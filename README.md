@@ -15,6 +15,11 @@ A modern e-commerce platform built with Next.js 14, featuring 3D product visuali
 
 - Next.js 14
 - TypeScript
+- MERN stack
+- Express JS
+- React JS
+- Mongo DB
+- Node JS
 - Tailwind CSS
 - Framer Motion
 - Three.js (for 3D visualization)
