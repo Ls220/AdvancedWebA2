@@ -13,18 +13,14 @@ const nextConfig = {
       },
     ],
   },
-  // Ensure environment variables are properly exposed
+  
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '',
   },
-  // Optimize for Netlify's serverless functions
   experimental: {
     serverActions: true,
   },
-  // Enable transpilePackages for packages that need to be transpiled
   transpilePackages: ["lucide-react"],
-  
-  // Configure rewrites to proxy API requests to your Express backend
   async rewrites() {
     return [
       {
@@ -35,8 +31,6 @@ const nextConfig = {
       },
     ];
   },
-
-  // Add this to help with React component resolution
   webpack: (config) => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
     return config;
