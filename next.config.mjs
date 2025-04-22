@@ -13,9 +13,12 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: "export",{
+  output: "export",
+  reactStrictMode: true,
+  images: {
+    unoptimized: true
+  }
 }
-
 
 if (userConfig) {
   // ESM imports will have a "default" property
