@@ -2,72 +2,58 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
 export async function fetchFromAPI(endpoint: string, options: RequestInit = {}) {
   try {
-    // Clean the endpoint and API URL to avoid double slashes
+    // Remove leading/trailing slashes
     const cleanEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint
     const cleanApiUrl = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL
     
-    // Construct the full URL
     const fullUrl = `${cleanApiUrl}/${cleanEndpoint}`
     
-    // Log the request details
-    console.log('Making API request to:', fullUrl)
+    console.log('Making API request:', {
+      url: fullUrl,
+      method: options.method || 'GET',
+    })
 
-    // Set default headers
     const headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       ...options.headers,
     }
 
-    // Make the fetch request
     const response = await fetch(fullUrl, {
       ...options,
       headers,
     })
 
-    // Log response status
-    console.log('Response status:', response.status)
-
-    // Check if the response was successful
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('Error response:', errorText)
-      
-      let errorMessage = `HTTP error! status: ${response.status}`
+      let errorData
       try {
-        const errorData = JSON.parse(errorText)
-        errorMessage = errorData.error || errorData.message || errorMessage
-      } catch (e) {
-        // If we can't parse the error as JSON, use the raw text
-        errorMessage = errorText || errorMessage
+        errorData = JSON.parse(errorText)
+      } catch {
+        errorData = { message: errorText }
       }
       
-      // If it's an authentication error, clear the token
-      if (response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-      }
-      
-      throw new Error(errorMessage)
+      throw new Error(
+        errorData.error || errorData.message || `HTTP error! status: ${response.status}`
+      )
     }
 
-    // Get the response text
     const responseText = await response.text()
-    
-    // Log the raw response text for debugging
-    console.log('Raw response:', responseText)
+    if (!responseText) {
+      return null
+    }
 
-    // Try to parse the response as JSON
     try {
-      const data = JSON.parse(responseText)
-      console.log('Parsed response data:', data)
-      return data
-    } catch (parseError) {
-      console.error('Failed to parse response as JSON:', responseText)
-      throw new Error('Server returned an invalid response format')
+      return JSON.parse(responseText)
+    } catch (e) {
+      console.error('Failed to parse response as JSON:', e)
+      throw new Error('Invalid JSON response from server')
     }
   } catch (error: any) {
-    console.error('API request failed:', error)
+    console.error('API request failed:', {
+      endpoint,
+      error: error.message
+    })
     throw error
   }
 }

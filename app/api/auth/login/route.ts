@@ -1,18 +1,16 @@
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import User from '@/models/User'
+import { connectToDatabase } from '@/lib/mongodb'
 
-// Access the same users array from register route
-// In a real app, this would be a database
-declare global {
-  var users: any[]
-}
-
-if (!global.users) {
-  global.users = []
-}
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
 export async function POST(request: Request) {
   try {
+    // Connect to database
+    await connectToDatabase()
+
     const body = await request.json()
     const { email, password } = body
 
@@ -25,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     // Find user
-    const user = global.users.find(u => u.email === email)
+    const user = await User.findOne({ email }).select('+password')
     
     if (!user) {
       return NextResponse.json(
@@ -35,7 +33,7 @@ export async function POST(request: Request) {
     }
 
     // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password)
+    const isValidPassword = await user.comparePassword(password)
     
     if (!isValidPassword) {
       return NextResponse.json(
@@ -44,15 +42,19 @@ export async function POST(request: Request) {
       )
     }
 
-    // Generate session token (in a real app, use a proper JWT)
-    const token = Buffer.from(Date.now().toString()).toString('base64')
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    )
 
     // Return user data and token
     return NextResponse.json({
       user: {
-        id: user.id,
+        id: user._id,
         email: user.email,
-        fullName: user.fullName,
+        name: user.name,
         phoneNumber: user.phoneNumber,
         deliveryAddress: user.deliveryAddress,
         createdAt: user.createdAt

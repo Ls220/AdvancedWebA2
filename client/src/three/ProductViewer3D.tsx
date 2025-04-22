@@ -4,67 +4,83 @@ import { Suspense, useEffect, useRef } from "react"
 import { Canvas, useThree } from "@react-three/fiber"
 import { OrbitControls, useGLTF, Environment, Stage, useAnimations } from "@react-three/drei"
 import * as THREE from "three"
+import { GLTF } from 'three-stdlib'
+import { PerspectiveCamera } from 'three'
 
-function Model({ modelPath, color }) {
-  const group = useRef()
-  const { scene, animations } = useGLTF(modelPath)
-  const { actions } = useAnimations(animations, group)
+interface ModelProps {
+  modelPath: string
+  color?: string
+}
 
-  // Apply color to the model if provided
+interface CameraControllerProps {
+  modelPath: string
+}
+
+interface GLTFResult extends GLTF {
+  nodes: Record<string, THREE.Object3D>
+  materials: Record<string, THREE.Material>
+}
+
+function Model({ modelPath, color }: ModelProps) {
+  const gltf = useGLTF(modelPath) as GLTFResult
+  const { animations } = gltf
+  const { actions } = useAnimations(animations, gltf.scene)
+
   useEffect(() => {
-    if (color) {
-      scene.traverse((child) => {
-        if (child.isMesh && child.material) {
-          // Clone the material to avoid affecting other instances
-          child.material = child.material.clone()
-          child.material.color = new THREE.Color(color)
-        }
-      })
-    }
-  }, [scene, color])
+    if (!color) return
 
-  // Play animation if available
+    Object.values(gltf.materials).forEach((material) => {
+      if (material instanceof THREE.MeshStandardMaterial) {
+        material.color.set(color)
+      }
+    })
+  }, [color, gltf.materials])
+
   useEffect(() => {
     if (actions && Object.keys(actions).length > 0) {
-      // Get the first animation
       const firstAction = Object.values(actions)[0]
-      firstAction.play()
+      if (firstAction) {
+        firstAction.play()
+      }
     }
   }, [actions])
 
-  return <primitive ref={group} object={scene} />
+  return (
+    <Stage adjustCamera={false}>
+      <primitive object={gltf.scene} />
+    </Stage>
+  )
 }
 
-// Update the CameraController function to better position the camera based on model type
-function CameraController({ modelPath }) {
+function CameraController({ modelPath }: CameraControllerProps) {
   const { camera } = useThree()
+  const gltf = useGLTF(modelPath) as GLTFResult
 
   useEffect(() => {
-    // Adjust camera position based on model type
-    if (modelPath.includes("cowboy-hat")) {
-      camera.position.set(0, 0, 2)
-    } else if (modelPath.includes("shoes")) {
-      camera.position.set(0, 0.5, 2.5)
-    } else if (modelPath.includes("t-shirt")) {
-      camera.position.set(0, 0, 3)
-    } else if (modelPath.includes("jacket")) {
-      camera.position.set(0, 0, 3)
-    } else {
-      camera.position.set(0, 0, 2.5)
-    }
-    camera.lookAt(0, 0, 0)
-  }, [camera, modelPath])
+    if (!(camera instanceof PerspectiveCamera)) return
+
+    const box = new THREE.Box3().setFromObject(gltf.scene)
+    const center = box.getCenter(new THREE.Vector3())
+    const size = box.getSize(new THREE.Vector3())
+
+    const maxDim = Math.max(size.x, size.y, size.z)
+    const fov = camera.fov * (Math.PI / 180)
+    const cameraZ = Math.abs(maxDim / Math.tan(fov / 2)) * 1.5
+    camera.position.set(0, 0, cameraZ)
+    camera.lookAt(center)
+
+    camera.updateProjectionMatrix()
+  }, [camera, gltf.scene])
 
   return null
 }
 
-// Update the ProductViewer3D component props
-export default function ProductViewer3D({ modelPath, color }) {
+export default function ProductViewer3D({ modelPath, color }: ModelProps) {
   return (
     <Canvas shadows>
       <CameraController modelPath={modelPath} />
       <Suspense fallback={null}>
-        <Stage environment="city" intensity={0.6} contactShadow shadows>
+        <Stage environment="city" intensity={0.6} shadows>
           <Model modelPath={modelPath} color={color} />
         </Stage>
         <Environment preset="city" />

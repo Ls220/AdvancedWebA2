@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import { Canvas } from "@react-three/fiber"
-import { OrbitControls, useGLTF, Stage, PresentationControls } from "@react-three/drei"
+import { OrbitControls, useGLTF, Stage } from "@react-three/drei"
 import { Suspense } from "react"
 import { LoadingSpinner } from "./LoadingSpinner"
 import Image from 'next/image'
 
 function Model({ modelPath }: { modelPath: string }) {
-  const [error, setError] = useState<Error | null>(null);
-  
   try {
     const { scene } = useGLTF(modelPath)
     
@@ -25,7 +23,7 @@ function Model({ modelPath }: { modelPath: string }) {
         <primitive 
           object={scene} 
           scale={scale}
-          rotation={[0, Math.PI / 4, 0]} // Rotate 45 degrees for better view
+          rotation={[0, Math.PI / 4, 0]}
         />
       </Stage>
     )
@@ -58,7 +56,6 @@ export default function ProductViewer3D({ modelPath, fallbackImage }: ProductVie
         setIsLoading(true)
         setError(null)
         
-        // Check if the file exists
         const response = await fetch(modelPath)
         if (!response.ok) {
           throw new Error('Model not found')
@@ -77,7 +74,6 @@ export default function ProductViewer3D({ modelPath, fallbackImage }: ProductVie
     checkModelAvailability()
   }, [modelPath])
 
-  // If we're not showing 3D or there's an error, show the fallback image
   if (!shouldShow3D || error) {
     return (
       <div className="relative w-full h-full min-h-[300px]">
@@ -109,15 +105,7 @@ export default function ProductViewer3D({ modelPath, fallbackImage }: ProductVie
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
         <Suspense fallback={null}>
-          <PresentationControls
-            global
-            zoom={0.8}
-            rotation={[0, -Math.PI / 4, 0]}
-            polar={[-Math.PI / 4, Math.PI / 4]}
-            azimuth={[-Math.PI / 4, Math.PI / 4]}
-          >
-            <Model modelPath={modelPath} />
-          </PresentationControls>
+          <Model modelPath={modelPath} />
         </Suspense>
         <OrbitControls
           enableZoom={true}

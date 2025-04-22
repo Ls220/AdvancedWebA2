@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 
-// Admin credentials (in a real app, these would be stored securely)
 const ADMIN_USERNAME = 'LS04'
 const ADMIN_PASSWORD = 'P455WORD'
 

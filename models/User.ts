@@ -24,12 +24,13 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     lowercase: true,
-    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address']
+    match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Please enter a valid email address']
   },
   password: {
     type: String,
     required: [true, 'Password is required'],
-    minlength: [6, 'Password must be at least 6 characters long']
+    minlength: [6, 'Password must be at least 6 characters long'],
+    select: false // Don't include password in queries by default
   },
   name: {
     type: String,
@@ -39,30 +40,44 @@ const userSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: String,
-    required: [true, 'Phone number is required'],
+    required: false,
     trim: true,
-    match: [/^\+?[\d\s-]{10,}$/, 'Please enter a valid phone number']
+    validate: {
+      validator: function(v: string) {
+        // UK phone number format (including optional +44)
+        return !v || /^(\+44\s?|0)?[1-9]\d{9}$/.test(v);
+      },
+      message: 'Please enter a valid UK phone number'
+    }
   },
   deliveryAddress: {
     street: {
       type: String,
-      required: [true, 'Street address is required'],
+      required: false,
       trim: true
     },
     city: {
       type: String,
-      required: [true, 'City is required'],
+      required: false,
       trim: true
     },
     postcode: {
       type: String,
-      required: [true, 'Postcode is required'],
-      trim: true
+      required: false,
+      trim: true,
+      validate: {
+        validator: function(v: string) {
+          // UK postcode format
+          return !v || /^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i.test(v);
+        },
+        message: 'Please enter a valid UK postcode'
+      }
     },
     country: {
       type: String,
-      required: [true, 'Country is required'],
-      trim: true
+      required: false,
+      trim: true,
+      default: 'UK'
     }
   }
 }, {
@@ -84,7 +99,15 @@ userSchema.pre('save', async function(next) {
 
 // Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password)
+  try {
+    // Need to select password since it's not included by default
+    const user = await this.model('User').findById(this._id).select('+password')
+    if (!user) return false
+    
+    return await bcrypt.compare(candidatePassword, user.password)
+  } catch (error) {
+    return false
+  }
 }
 
 // Remove password from JSON output

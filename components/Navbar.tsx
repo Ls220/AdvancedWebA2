@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ShoppingCart, User } from 'lucide-react'
+import { ShoppingCart, User, Shield } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -10,10 +10,13 @@ import { Button } from '@/components/ui/button'
 export default function Navbar() {
   const pathname = usePathname()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
+    const userRole = localStorage.getItem('userRole')
     setIsLoggedIn(!!token)
+    setIsAdmin(userRole === 'admin')
   }, [])
 
   const isActive = (path: string) => pathname === path
@@ -28,7 +31,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link href="/" className="text-white font-bold text-xl">
-              E-Commerce
+              Lister's Store
             </Link>
             <div className="hidden md:flex space-x-6">
               <Link
@@ -55,12 +58,32 @@ export default function Navbar() {
               >
                 Kids Collection
               </Link>
+              <Link
+                href="/about"
+                className={`text-white/80 hover:text-white transition-colors ${
+                  isActive('/about') ? 'text-white font-medium' : ''
+                }`}
+              >
+                About Us
+              </Link>
             </div>
           </div>
 
           <div className="flex items-center space-x-4">
+            {isAdmin && (
+              <Link href="/admin">
+                <Button
+                  variant="ghost"
+                  className="text-white hover:bg-white/20 flex items-center gap-2"
+                >
+                  <Shield className="h-5 w-5" />
+                  <span className="hidden sm:inline">Admin</span>
+                </Button>
+              </Link>
+            )}
+            
             {isLoggedIn ? (
-              <Link href="/dashboard">
+              <Link href="/profile">
                 <Button
                   variant="ghost"
                   className="text-white hover:bg-white/20"
@@ -79,9 +102,7 @@ export default function Navbar() {
                 </Button>
               </Link>
             )}
-            <Link href="/profile" className="transition-colors hover:text-foreground/80">
-              <User className="h-6 w-6" />
-            </Link>
+            
             <Link href="/cart">
               <Button
                 variant="ghost"

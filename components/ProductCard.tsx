@@ -9,7 +9,7 @@ import { formatCurrency } from '@/lib/formatCurrency'
 import { motion } from 'framer-motion'
 
 interface Product {
-  id: string
+  _id: string
   name: string
   price: number
   description: string
@@ -57,7 +57,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               >
                 Add to Cart
               </Button>
-              <Link href={`/products/${product.id}`} className="flex-1">
+              <Link href={`/products/${product._id}`} className="flex-1">
                 <Button className="w-full bg-white/20 hover:bg-white/30 backdrop-blur-sm">
                   View Details
                 </Button>

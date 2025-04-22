@@ -1,78 +1,72 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { LoadingSpinner } from "@/components/LoadingSpinner"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { fetchFromAPI } from "@/lib/api"
 import ProductCard from "@/components/ProductCard"
+import { motion } from "framer-motion"
 
-interface Product {
-  _id: string
-  name: string
-  price: number
-  description: string
-  category: string
-  model3d: string
-  fallbackImage: string
-}
+const womensProducts = [
+  {
+    _id: "4",
+    name: "Elegant Coat",
+    price: 199.99,
+    description: "Stylish and warm coat perfect for any occasion.",
+    category: "women",
+    model3d: "/models/tan_womans_coat.glb",
+    fallbackImage: "/images/coat-fallback.jpg"
+  },
+  {
+    _id: "5",
+    name: "Pleated Midi Skirt",
+    price: 89.99,
+    description: "Elegant pleated midi skirt with a modern design.",
+    category: "women",
+    model3d: "/models/dark_blue_irregular_pleated_loose_midi_skirt.glb",
+    fallbackImage: "/images/skirt-fallback.jpg"
+  },
+  {
+    _id: "6",
+    name: "Classic Maid Uniform",
+    price: 129.99,
+    description: "Traditional maid uniform with modern touches.",
+    category: "women",
+    model3d: "/models/maid_uniform.glb",
+    fallbackImage: "/images/uniform-fallback.jpg"
+  }
+]
 
 export default function WomensCollectionPage() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const data = await fetchFromAPI('products?category=women')
-      console.log('Fetched women\'s products:', data)
-      setProducts(Array.isArray(data) ? data : [])
-    } catch (err) {
-      console.error('Error fetching women\'s products:', err)
-      setError('Failed to load products. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchProducts()
-  }, [])
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <LoadingSpinner />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
-        <p className="text-red-500">{error}</p>
-        <Button onClick={fetchProducts}>Retry</Button>
-      </div>
-    )
-  }
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-4">Women's Collection</h1>
-      <p className="text-gray-600 mb-8">
-        Discover our elegant women's collection, featuring timeless pieces and contemporary designs.
-      </p>
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-4xl font-bold mb-4 text-white">Women's Collection</h1>
+        <p className="text-white/70 mb-8">
+          Explore our curated collection of women's fashion, where style meets comfort.
+        </p>
+      </motion.div>
       
-      {products.length === 0 ? (
-        <p className="text-center text-gray-500">No products available.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
-      )}
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: {
+              staggerChildren: 0.1
+            }
+          }
+        }}
+        initial="hidden"
+        animate="show"
+      >
+        {womensProducts.map((product) => (
+          <ProductCard key={product._id} product={product} />
+        ))}
+      </motion.div>
     </div>
   )
 } 

@@ -1,88 +1,80 @@
 import { NextResponse } from 'next/server'
+import { connectToDatabase } from '@/lib/mongodb'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import { ObjectId } from 'mongodb'
 
-// Use the same global users array as the login route
-declare global {
-  var users: any[]
+interface RegisterRequest {
+  email: string
+  password: string
+  name: string
 }
 
-if (!global.users) {
-  global.users = []
+interface User {
+  _id?: ObjectId
+  email: string
+  password: string
+  name: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { email, password, fullName, phoneNumber, deliveryAddress } = body
+    const { email, password, name } = await request.json() as RegisterRequest
 
-    // Validate required fields
-    if (!email || !password || !fullName) {
+    if (!email || !password || !name) {
       return NextResponse.json(
-        { error: 'Email, password, and full name are required' },
+        { success: false, message: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Parse delivery address if it's a string
-    let parsedAddress = deliveryAddress
-    if (typeof deliveryAddress === 'string') {
-      try {
-        parsedAddress = JSON.parse(deliveryAddress)
-      } catch (e) {
-        console.error('Failed to parse delivery address:', e)
-        parsedAddress = { raw: deliveryAddress }
-      }
-    }
+    const { db } = await connectToDatabase()
+    const usersCollection = db.collection('users')
 
-    // Check if user already exists
-    if (global.users.some(user => user.email === email)) {
+    const existingUser = await usersCollection.findOne({ email })
+    if (existingUser) {
       return NextResponse.json(
-        { error: 'User already exists' },
+        { success: false, message: 'User already exists' },
         { status: 400 }
       )
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // Create new user
-    const newUser = {
-      id: Date.now().toString(),
+    const newUser: User = {
       email,
       password: hashedPassword,
-      fullName,
-      phoneNumber: phoneNumber || '',
-      deliveryAddress: parsedAddress,
-      createdAt: new Date().toISOString()
+      name,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
 
-    // Store user in global array
-    global.users.push(newUser)
+    const { _id, ...userWithoutId } = newUser
+    const result = await usersCollection.insertOne(userWithoutId)
+    newUser._id = result.insertedId
 
-    // Log the registered user (for debugging)
-    console.log('Registered new user:', { email, fullName })
-    console.log('Total users:', global.users.length)
+    const token = jwt.sign(
+      { userId: result.insertedId.toString() },
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: '7d' }
+    )
 
-    // Return success response
+    const { password: _, ...userWithoutPassword } = newUser
     return NextResponse.json(
       { 
+        success: true, 
         message: 'User registered successfully',
-        user: {
-          id: newUser.id,
-          email: newUser.email,
-          fullName: newUser.fullName,
-          phoneNumber: newUser.phoneNumber,
-          deliveryAddress: newUser.deliveryAddress,
-          createdAt: newUser.createdAt
-        }
+        user: userWithoutPassword,
+        token 
       },
       { status: 201 }
     )
-
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
-      { error: 'Failed to register user' },
+      { success: false, message: 'Internal server error' },
       { status: 500 }
     )
   }

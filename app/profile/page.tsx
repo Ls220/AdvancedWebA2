@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/formatCurrency'
+import { LogOut } from 'lucide-react'
 
 interface Order {
   id: string
@@ -69,6 +70,14 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  const handleLogout = () => {
+    // Clear authentication data
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    // Redirect to login page
+    router.push('/login')
+  }
+
   useEffect(() => {
     // Simulate API call - replace with actual API call in production
     const fetchProfile = async () => {
@@ -110,7 +119,17 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold text-foreground mb-8">My Profile</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-foreground">My Profile</h1>
+          <Button 
+            variant="destructive" 
+            onClick={handleLogout}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </Button>
+        </div>
 
         <Tabs defaultValue="details" className="space-y-6">
           <TabsList>

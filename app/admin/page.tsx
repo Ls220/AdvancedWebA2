@@ -1,15 +1,16 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAdminStore, User, Product } from './store'
 import { useAdminAuth } from './auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatCurrency } from '@/lib/formatCurrency'
 import { ThemeToggle } from './ThemeToggle'
-import { Plus } from 'lucide-react'
+import { Plus, Shield, Trash2 } from 'lucide-react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export default function AdminDashboard() {
   const { logout } = useAdminAuth()
@@ -20,6 +21,34 @@ export default function AdminDashboard() {
   const [productForm, setProductForm] = useState<Partial<Product>>({})
   const [isAddingUser, setIsAddingUser] = useState(false)
   const [isAddingProduct, setIsAddingProduct] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/admin/users', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        })
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch users')
+        }
+
+        const data = await response.json()
+        setUsers(data.users)
+      } catch (err) {
+        setError('Failed to load users. Please try again later.')
+        console.error('Error fetching users:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [])
 
   const handleUserEdit = (user: User) => {
     setEditingUser(user.id)
@@ -64,6 +93,36 @@ export default function AdminDashboard() {
     })
     setIsAddingProduct(false)
     setProductForm({})
+  }
+
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete user')
+      }
+
+      setUsers(users.filter(user => user.id !== userId))
+    } catch (err) {
+      console.error('Error deleting user:', err)
+      setError('Failed to delete user. Please try again.')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -187,7 +246,7 @@ export default function AdminDashboard() {
                         </Button>
                         <Button
                           variant="destructive"
-                          onClick={() => deleteUser(user.id)}
+                          onClick={() => handleDeleteUser(user.id)}
                         >
                           Delete
                         </Button>

@@ -11,7 +11,7 @@ export default function RegisterForm() {
     email: '',
     password: '',
     confirmPassword: '',
-    fullName: '',
+    name: '',
     phoneNumber: '',
     street: '',
     city: '',
@@ -33,44 +33,98 @@ export default function RegisterForm() {
     e.preventDefault()
     setError('')
 
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.password) {
+      setError('Name, email, and password are required')
+      return
+    }
+
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
       return
     }
 
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long')
+      return
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address')
+      return
+    }
+
+    // Validate UK phone number
+    const phoneRegex = /^(\+44\s?|0)?[1-9]\d{9}$/
+    if (formData.phoneNumber && !phoneRegex.test(formData.phoneNumber)) {
+      setError('Please enter a valid UK phone number (e.g., 07123456789 or +447123456789)')
+      return
+    }
+
+    // Validate UK postcode
+    const postcodeRegex = /^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i
+    if (formData.postcode && !postcodeRegex.test(formData.postcode)) {
+      setError('Please enter a valid UK postcode (e.g., SW1A 1AA)')
+      return
+    }
+
     setLoading(true)
 
     try {
-      // Construct the full address
-      const deliveryAddress = {
-        street: formData.street,
-        city: formData.city,
-        postcode: formData.postcode,
-        email: formData.additionalEmail
-      }
-
       const registrationData = {
-        email: formData.email,
+        email: formData.email.trim(),
         password: formData.password,
-        fullName: formData.fullName,
-        phoneNumber: formData.phoneNumber,
-        deliveryAddress: JSON.stringify(deliveryAddress)
+        name: formData.name.trim()
       }
 
+      console.log('Attempting to register with data:', {
+        ...registrationData,
+        password: '[REDACTED]'
+      })
+      
       const response = await fetchFromAPI('auth/register', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(registrationData)
       })
 
-      if (response.message === 'User registered successfully') {
-        router.push('/login')
+      console.log('Full registration response:', response)
+
+      if (response && response.success) {
+        console.log('Registration successful, redirecting to login')
+        router.push('/login?registered=true')
       } else {
-        setError('Registration failed. Please try again.')
+        const errorMsg = response?.message || 'Registration failed. Please try again.'
+        console.log('Registration failed:', { response, errorMsg })
+        setError(errorMsg)
       }
     } catch (error: any) {
-      setError(error.message || 'Failed to register user')
-    } finally {
+      console.error('Detailed registration error:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        cause: error.cause,
+        response: error.response,
+        toString: error.toString()
+      })
+      
+      // Try to extract a meaningful error message
+      let errorMessage = 'Failed to register user'
+      if (error.message && error.message !== '{}') {
+        errorMessage = error.message
+      } else if (error.response?.message) {
+        errorMessage = error.response.message
+      } else if (error.cause?.message) {
+        errorMessage = error.cause.message
+      }
+      
+      setError(errorMessage)
       setLoading(false)
     }
   }
@@ -93,14 +147,14 @@ export default function RegisterForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="fullName" className="block text-sm font-medium text-white mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-white mb-1">
                 Full Name
               </label>
               <input
                 type="text"
-                id="fullName"
-                name="fullName"
-                value={formData.fullName}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
@@ -126,7 +180,7 @@ export default function RegisterForm() {
 
             <div>
               <label htmlFor="phoneNumber" className="block text-sm font-medium text-white mb-1">
-                Phone Number
+                Phone Number (UK)
               </label>
               <input
                 type="tel"
@@ -136,13 +190,13 @@ export default function RegisterForm() {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
-                placeholder="Enter your phone number"
+                placeholder="e.g., 07123456789 or +447123456789"
               />
             </div>
 
             <div className="space-y-4">
               <label className="block text-sm font-medium text-white mb-1">
-                Delivery Address
+                Delivery Address (UK)
               </label>
               <input
                 type="text"
@@ -170,17 +224,9 @@ export default function RegisterForm() {
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
-                  placeholder="Postcode"
+                  placeholder="e.g., SW1A 1AA"
                 />
               </div>
-              <input
-                type="email"
-                name="additionalEmail"
-                value={formData.additionalEmail}
-                onChange={handleChange}
-                className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
-                placeholder="Additional Email (Optional)"
-              />
             </div>
 
             <div>
@@ -194,8 +240,9 @@ export default function RegisterForm() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                minLength={6}
                 className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
-                placeholder="Create a password"
+                placeholder="Create a password (min. 6 characters)"
               />
             </div>
 

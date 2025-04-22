@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
+import ProductViewer3D from '@/components/ProductViewer3D'
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
@@ -12,106 +13,102 @@ export default function HomePage() {
     setMounted(true)
   }, [])
 
-  if (!mounted) return null
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-white text-2xl">Loading...</div>
+      </div>
+    )
+  }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-white/10 backdrop-blur-3xl"
-            style={{
-              width: Math.random() * 300 + 50,
-              height: Math.random() * 300 + 50,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
-              scale: [1, Math.random() + 0.5],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 5,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Content */}
+    <div className="relative min-h-screen">
       <div className="relative z-10 container mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center text-white"
+          transition={{ duration: 0.5 }}
+          className="text-center"
         >
-          <h1 className="text-6xl font-bold mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white">
             Welcome to Our Fashion Store
           </h1>
-          <p className="text-xl mb-12 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl mb-12 max-w-2xl mx-auto text-white/90">
             Discover our latest collections with immersive 3D viewing technology.
             Experience fashion like never before.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/mens-collection">
-                <Button className="w-full h-32 text-xl bg-white/10 backdrop-blur-md hover:bg-white/20 border-2 border-white/50">
-                  Men's Collection
-                </Button>
-              </Link>
-            </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
+            <Link href="/mens-collection" className="block">
+              <Button 
+                className="w-full py-6 sm:py-8 text-lg sm:text-xl bg-white/10 hover:bg-white/20 text-white border border-white/20"
+              >
+                Men's Collection
+              </Button>
+            </Link>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/womens-collection">
-                <Button className="w-full h-32 text-xl bg-white/10 backdrop-blur-md hover:bg-white/20 border-2 border-white/50">
-                  Women's Collection
-                </Button>
-              </Link>
-            </motion.div>
+            <Link href="/womens-collection" className="block">
+              <Button 
+                className="w-full py-6 sm:py-8 text-lg sm:text-xl bg-white/10 hover:bg-white/20 text-white border border-white/20"
+              >
+                Women's Collection
+              </Button>
+            </Link>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link href="/kids-collection">
-                <Button className="w-full h-32 text-xl bg-white/10 backdrop-blur-md hover:bg-white/20 border-2 border-white/50">
-                  Kids Collection
-                </Button>
-              </Link>
-            </motion.div>
+            <Link href="/kids-collection" className="block">
+              <Button 
+                className="w-full py-6 sm:py-8 text-lg sm:text-xl bg-white/10 hover:bg-white/20 text-white border border-white/20"
+              >
+                Kids Collection
+              </Button>
+            </Link>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="mt-20"
-          >
-            <h2 className="text-3xl font-semibold mb-6">
-              Experience 3D Fashion Viewing
-            </h2>
-            <p className="text-lg mb-8">
-              Rotate, zoom, and examine our products in stunning 3D detail before you buy.
-            </p>
-          </motion.div>
-        </motion.div>
+          <section className="mt-24">
+            <h2 className="text-3xl font-bold mb-12 text-white">Featured 3D Models</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="bg-white/10 rounded-lg p-4">
+                <div className="h-64 mb-4">
+                  <ProductViewer3D 
+                    modelPath="/models/T-shirt.glb" 
+                    fallbackImage="/images/products/tshirt-fallback.jpg"
+                  />
+                </div>
+                <h3 className="text-white font-semibold">Classic T-Shirt</h3>
+              </div>
+              
+              <div className="bg-white/10 rounded-lg p-4">
+                <div className="h-64 mb-4">
+                  <ProductViewer3D 
+                    modelPath="/models/Jacket.glb" 
+                    fallbackImage="/images/products/jacket-fallback.jpg"
+                  />
+                </div>
+                <h3 className="text-white font-semibold">Leather Jacket</h3>
+              </div>
 
-        <div className="text-center mt-20">
-          <p className="text-gray-500">Our store is now live! Browse our collections and enjoy shopping.</p>
-        </div>
+              <div className="bg-white/10 rounded-lg p-4">
+                <div className="h-64 mb-4">
+                  <ProductViewer3D 
+                    modelPath="/models/dark_blue_irregular_pleated_loose_midi_skirt.glb" 
+                    fallbackImage="/images/products/skirt-fallback.jpg"
+                  />
+                </div>
+                <h3 className="text-white font-semibold">Elegant Midi Skirt</h3>
+              </div>
+
+              <div className="bg-white/10 rounded-lg p-4">
+                <div className="h-64 mb-4">
+                  <ProductViewer3D 
+                    modelPath="/models/tan_womans_coat.glb" 
+                    fallbackImage="/images/products/coat-fallback.jpg"
+                  />
+                </div>
+                <h3 className="text-white font-semibold">Tan Coat</h3>
+              </div>
+            </div>
+          </section>
+        </motion.div>
       </div>
     </div>
   )
