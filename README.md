@@ -51,7 +51,7 @@ npm run dev
 
 ## Deployment
 
-This project is configured for deployment on Vercel. Simply connect your GitHub repository to Vercel for automatic deployments.
+This project is configured for deployment on Github, as we had many different key issues when trying to deploy onto vercel.
 
 ## Project Structure
 
