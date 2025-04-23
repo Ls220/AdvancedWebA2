@@ -10,7 +10,7 @@ const apiProxy = createProxyMiddleware({
   },
 })
 
-// Disable body parsing, we need the raw body for the proxy
+
 export const config = {
   api: {
     bodyParser: false,
@@ -18,7 +18,7 @@ export const config = {
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // @ts-ignore - http-proxy-middleware types don't match Next.js types exactly
+  
   return apiProxy(req, res)
 }
 

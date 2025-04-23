@@ -6,6 +6,12 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import ProductViewer3D from '@/components/ProductViewer3D'
 
+// TODO: Add loading states for better user experience
+// TODO: Implement error handling for failed data fetches
+// TODO: Add pagination for product listings
+// TODO: Add search functionality for products
+// TODO: Add filters for product categories
+
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
 
@@ -30,6 +36,10 @@ export default function HomePage() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
+//ALSO IMPLEMENT PROPER SITE ICONS AND THEME SWITCHING
+          //INCORMPRATE NEW FEATURES AND ADD BACKGROUND IMAGE ETC 
+
+          
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white">
             Welcome to Our Fashion Store
           </h1>
