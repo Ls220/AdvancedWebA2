@@ -12,7 +12,7 @@ exports.createPaymentIntent = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Please provide an amount", 400))
   }
 
-  // Create a PaymentIntent with the order amount and currency
+
   const paymentIntent = await stripe.paymentIntents.create({
     amount,
     currency,
@@ -26,10 +26,6 @@ exports.createPaymentIntent = asyncHandler(async (req, res, next) => {
     clientSecret: paymentIntent.client_secret,
   })
 })
-
-// @desc    Webhook handler for Stripe events
-// @route   POST /api/webhook
-// @access  Public
 exports.webhook = asyncHandler(async (req, res, next) => {
   const sig = req.headers["stripe-signature"]
   let event
@@ -39,24 +35,19 @@ exports.webhook = asyncHandler(async (req, res, next) => {
   } catch (err) {
     return next(new ErrorResponse(`Webhook Error: ${err.message}`, 400))
   }
-
-  // Handle the event
   switch (event.type) {
     case "payment_intent.succeeded":
       const paymentIntent = event.data.object
       console.log("PaymentIntent was successful!", paymentIntent.id)
-      // Update order status in database
+    // CHECK ORDER STATUS IN DB & UPDATE ORDER STATUS
       break
     case "payment_intent.payment_failed":
       const failedPaymentIntent = event.data.object
       console.log("Payment failed:", failedPaymentIntent.id)
-      // Handle failed payment
-      break
+    
     default:
       console.log(`Unhandled event type ${event.type}`)
   }
-
-  // Return a 200 response to acknowledge receipt of the event
   res.status(200).json({ received: true })
 })
 

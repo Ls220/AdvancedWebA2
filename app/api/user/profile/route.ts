@@ -3,7 +3,7 @@ import connectToDatabase from '@/lib/db'
 import User from '@/models/User'
 import { verifyToken } from '@/lib/auth'
 
-// Access the same users array from register route
+
 declare global {
   var users: any[]
 }
@@ -14,7 +14,7 @@ if (!global.users) {
 
 export async function GET(request: Request) {
   try {
-    // Get the authorization header
+    
     const authHeader = request.headers.get('authorization')
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -24,11 +24,10 @@ export async function GET(request: Request) {
       )
     }
 
-    // Extract the token
+  
     const token = authHeader.split(' ')[1]
 
-    // In a real app, you would verify the JWT token
-    // For now, we'll do a simple check if the token exists
+    
     if (!token) {
       return NextResponse.json(
         { error: 'Invalid token' },
@@ -36,19 +35,17 @@ export async function GET(request: Request) {
       )
     }
 
-    // Get user data from localStorage in the client
-    // In a real app, you would decode the JWT and get the user ID
-    // Then fetch the user from the database
-    const user = global.users[0] // For demo, return the first user
-
-    if (!user) {
+    // LOCAL STORAGE USER DATA REMOVE WHEN YOU FIX
+  
+    
+    const user = global.users[0] 
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       )
     }
 
-    // Return user data without sensitive information
+    // Fetch user data withou sens data
     return NextResponse.json({
       user: {
         id: user.id,

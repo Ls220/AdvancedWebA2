@@ -21,16 +21,12 @@ export default function AboutPage() {
 
         <div className="prose prose-lg max-w-none mb-12">
           <p className="text-lg">
-            Welcome to ShopVerse, your premier destination for high-quality clothing for men, women, and children.
-            Founded in 2023, we've quickly established ourselves as a trusted name in fashion retail, offering a curated
-            selection of stylish and comfortable clothing for the entire family.
+            Welcome to Listers shop, your premier destination for high-quality clothing for men, women, and children.
+            
           </p>
 
           <p className="text-lg mt-4">
-            What sets us apart is our commitment to quality, sustainability and customer satisfaction. Each piece in
-            our collection is carefully selected to ensure the highest standards of craftsmanship and durability. We
-            believe that great fashion should be accessible to everyone, which is why we offer a diverse range of styles
-            at competitive prices.
+            What sets us apart is our commitment to quality, sustainability and customer satisfaction.
           </p>
         </div>
 
@@ -56,7 +52,7 @@ export default function AboutPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Quality Assurance</h3>
                 <p className="text-muted-foreground">
-                  We carefully select each item in our inventory to ensure the highest quality standards.
+                  We carefully select each item in our collections to help ensure the highest quality standards.
                 </p>
               </div>
             </CardContent>
@@ -83,7 +79,7 @@ export default function AboutPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Ethical Sourcing</h3>
                 <p className="text-muted-foreground">
-                  We partner with manufacturers who prioritize fair labor practices and sustainable production.
+                  All clothing is ethically sourced and made with care.
                 </p>
               </div>
             </CardContent>
@@ -121,9 +117,7 @@ export default function AboutPage() {
         <div className="bg-muted/30 rounded-lg p-8 mb-12">
           <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
           <p className="text-lg">
-            At ShopVerse, our mission is to provide high-quality, stylish clothing that empowers individuals to express
-            themselves confidently. We're committed to sustainable practices, ethical sourcing, and creating a seamless
-            shopping experience that combines the best of traditional retail with cutting-edge technology.
+            
           </p>
         </div>
 
@@ -150,6 +144,8 @@ export default function AboutPage() {
                 name: "David Kim",
                 role: "Customer Experience",
                 image: "/placeholder.svg?height=200&width=200&text=David",
+
+                //remove not needed as design was changed (got rid of placeholder images and added maps)
               },
             ].map((member, index) => (
               <div key={index} className="text-center">
@@ -168,7 +164,7 @@ export default function AboutPage() {
         </div>
 
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Ready to Experience ShopVerse?</h2>
+          <h2 className="text-2xl font-bold mb-4">Ready to Experience Listers Shop?</h2>
           <p className="text-lg mb-6">Discover our latest collections and find your perfect style today.</p>
           <div className="flex justify-center gap-4">
             <Button asChild size="lg">

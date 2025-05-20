@@ -13,7 +13,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "../store/AuthContext"
 import { Loader2 } from "lucide-react"
 
-// Define form validation schema
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required"),
@@ -29,14 +28,13 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(location.state?.message || null)
 
-  // Redirect if already logged in
+  // Redirect 
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/")
     }
   }, [isAuthenticated, navigate])
 
-  // Initialize form
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -45,7 +43,6 @@ export default function LoginPage() {
     },
   })
 
-  // Handle form submission
   const onSubmit = async (values: LoginFormValues) => {
     setIsSubmitting(true)
     setError(null)
@@ -54,7 +51,6 @@ export default function LoginPage() {
       const success = await login(values.email, values.password)
 
       if (success) {
-        // Login successful, redirect to home or previous page
         const from = location.state?.from?.pathname || "/"
         navigate(from)
       }

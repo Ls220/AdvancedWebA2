@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const { username, password } = body
 
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      // Generate admin token with special claims
+      // FOR ADMIN TOKEN below fix format 
       const token = jwt.sign(
         { 
           username,

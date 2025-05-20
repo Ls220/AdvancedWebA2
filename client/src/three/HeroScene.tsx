@@ -9,7 +9,7 @@ function ClothingModel({ position, rotation, scale, url, color }) {
   const { scene } = useGLTF(url)
   const ref = useRef()
 
-  // Apply color to the model if provided
+  
   useFrame(() => {
     if (ref.current) {
       ref.current.rotation.y += 0.005
@@ -47,7 +47,6 @@ function Floor() {
   )
 }
 
-// Update the FloatingClothes function to use more accurate descriptions
 function FloatingClothes() {
   const clothes = [
     {

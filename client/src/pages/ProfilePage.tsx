@@ -14,13 +14,12 @@ import { useAuth } from "../store/AuthContext"
 import { Loader2 } from "lucide-react"
 import { Navigate } from "react-router-dom"
 
-// Define profile form validation schema
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
 })
 
-// Define password form validation schema
+// U SE VALIDATION SCHEMA TO SET PASSWORD REQUIREMENTS
 const passwordSchema = z
   .object({
     currentPassword: z.string().min(1, "Current password is required"),
@@ -44,7 +43,7 @@ export default function ProfilePage() {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
 
-  // Initialize profile form
+
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -52,8 +51,6 @@ export default function ProfilePage() {
       email: user?.email || "",
     },
   })
-
-  // Initialize password form
   const passwordForm = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -63,7 +60,6 @@ export default function ProfilePage() {
     },
   })
 
-  // Handle profile form submission
   const onProfileSubmit = async (values: ProfileFormValues) => {
     setIsUpdatingProfile(true)
     setProfileSuccess(null)
@@ -82,8 +78,6 @@ export default function ProfilePage() {
       setIsUpdatingProfile(false)
     }
   }
-
-  // Handle password form submission
   const onPasswordSubmit = async (values: PasswordFormValues) => {
     setIsUpdatingPassword(true)
     setPasswordSuccess(null)
@@ -107,8 +101,6 @@ export default function ProfilePage() {
       setIsUpdatingPassword(false)
     }
   }
-
-  // Show loading state
   if (isLoading) {
     return (
       <div className="container py-12 flex justify-center">
@@ -117,7 +109,15 @@ export default function ProfilePage() {
     )
   }
 
-  // Redirect if not authenticated
+
+
+
+
+
+
+
+
+  
   if (!isLoading && !isAuthenticated) {
     return <Navigate to="/login" state={{ from: { pathname: "/profile" } }} />
   }

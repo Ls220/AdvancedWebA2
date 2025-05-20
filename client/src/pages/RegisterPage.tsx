@@ -13,7 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAuth } from "../store/AuthContext"
 import { Loader2 } from "lucide-react"
 
-// Define form validation schema
+
 const registerSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -45,7 +45,7 @@ export default function RegisterPage() {
     },
   })
 
-  // Handle form submission
+
   const onSubmit = async (values: RegisterFormValues) => {
     setIsSubmitting(true)
     setError(null)
@@ -54,7 +54,7 @@ export default function RegisterPage() {
       const success = await register(values.name, values.email, values.password)
 
       if (success) {
-        // Registration successful, redirect to login
+    
         navigate("/login", { state: { message: "Registration successful! Please log in with your new account." } })
       }
     } catch (err) {

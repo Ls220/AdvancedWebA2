@@ -2,77 +2,79 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-
-interface FormData {
-  name: string
-  email: string
-  password: string
-  phoneNumber: string
-  deliveryAddress: {
-    street: string
-    city: string
-    postcode: string
-    country: string
-  }
-}
+import { motion } from 'framer-motion'
 
 const RegisterPage = () => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     phoneNumber: '',
-    deliveryAddress: {
-      street: '',
-      city: '',
-      postcode: '',
-      country: ''
-    }
+    street: '',
+    city: '',
+    postcode: '',
+    country: ''
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target
-    if (id.includes('.')) {
-      const [parent, child] = id.split('.')
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...(prev[parent as keyof FormData] as Record<string, string>),
-          [child]: value
-        }
-      }))
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [id]: value
-      }))
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const validateForm = () => {
+    if (formData.password.length < 6) {
+      setError('Password needs to be at least 6 characters')
+      return false
     }
+    if (!formData.email.includes('@')) {
+      setError('Please enter a valid email')
+      return false
+    }
+    if (formData.phoneNumber && !/^\+?[\d\s-]{10,}$/.test(formData.phoneNumber)) {
+      setError('Please enter a valid phone number')
+      return false
+    }
+    return true
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    
+    if (!validateForm()) return
+
     setLoading(true)
 
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phoneNumber: formData.phoneNumber,
+          deliveryAddress: {
+            street: formData.street,
+            city: formData.city,
+            postcode: formData.postcode,
+            country: formData.country
+          }
+        }),
       })
 
       const data = await res.json()
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to register')
+        throw new Error(data.error || 'Something went wrong')
       }
 
-      // Registration successful, redirect to login
       router.push('/login')
     } catch (err: any) {
       setError(err.message)
@@ -82,28 +84,39 @@ const RegisterPage = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Register</h2>
-        
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden"
+      >
+        <div className="px-8 py-6">
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+            Join Our Fashion Community
+          </h2>
+          
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg text-sm"
+            >
+              {error}
+            </motion.div>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                Name
+                Full Name
               </label>
               <input
                 type="text"
                 id="name"
+                name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 required
               />
             </div>
@@ -115,9 +128,10 @@ const RegisterPage = () => {
               <input
                 type="email"
                 id="email"
+                name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 required
               />
             </div>
@@ -129,11 +143,11 @@ const RegisterPage = () => {
               <input
                 type="password"
                 id="password"
+                name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 required
-                minLength={6}
               />
             </div>
 
@@ -144,85 +158,90 @@ const RegisterPage = () => {
               <input
                 type="tel"
                 id="phoneNumber"
+                name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                placeholder="+1 (555) 555-5555"
               />
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-700">Delivery Address</h3>
+            <div className="pt-6 border-t border-gray-200">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Delivery Address</h3>
               
-              <div>
-                <label htmlFor="deliveryAddress.street" className="block text-sm font-medium text-gray-700">
-                  Street Address
-                </label>
-                <input
-                  type="text"
-                  id="deliveryAddress.street"
-                  value={formData.deliveryAddress.street}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
-              </div>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="street" className="block text-sm font-medium text-gray-700">
+                    Street Address
+                  </label>
+                  <input
+                    type="text"
+                    id="street"
+                    name="street"
+                    value={formData.street}
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                </div>
 
-              <div>
-                <label htmlFor="deliveryAddress.city" className="block text-sm font-medium text-gray-700">
-                  City
-                </label>
-                <input
-                  type="text"
-                  id="deliveryAddress.city"
-                  value={formData.deliveryAddress.city}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
-              </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="city" className="block text-sm font-medium text-gray-700">
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      id="city"
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                  </div>
 
-              <div>
-                <label htmlFor="deliveryAddress.postcode" className="block text-sm font-medium text-gray-700">
-                  Postcode
-                </label>
-                <input
-                  type="text"
-                  id="deliveryAddress.postcode"
-                  value={formData.deliveryAddress.postcode}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
-              </div>
+                  <div>
+                    <label htmlFor="postcode" className="block text-sm font-medium text-gray-700">
+                      Postcode
+                    </label>
+                    <input
+                      type="text"
+                      id="postcode"
+                      name="postcode"
+                      value={formData.postcode}
+                      onChange={handleChange}
+                      className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                  </div>
+                </div>
 
-              <div>
-                <label htmlFor="deliveryAddress.country" className="block text-sm font-medium text-gray-700">
-                  Country
-                </label>
-                <input
-                  type="text"
-                  id="deliveryAddress.country"
-                  value={formData.deliveryAddress.country}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
+                <div>
+                  <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    id="country"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-6 w-full rounded-md bg-indigo-600 py-2 px-4 text-white font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {loading ? 'Registering...' : 'Register'}
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account?{" "}
-          <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Login
-          </a>
-        </p>
-      </div>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={loading}
+              className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Creating Account...' : 'Create Account'}
+            </motion.button>
+          </form>
+        </div>
+      </motion.div>
     </div>
   )
 }

@@ -35,7 +35,7 @@ export default function KidsCollectionPage() {
         <div className="space-y-4">
           <h1 className="text-4xl font-bold">Kids Collection</h1>
           <p className="text-muted-foreground text-lg">
-            Discover our adorable children's collection, designed for comfort and style.
+            Discover our adorable childrens clothing designed for comfort and style.
           </p>
         </div>
         

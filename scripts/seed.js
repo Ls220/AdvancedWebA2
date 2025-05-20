@@ -1,7 +1,5 @@
 const { spawn } = require('child_process');
 const path = require('path');
-
-// Run ts-node with the appropriate flags
 const tsNode = spawn('npx', [
   'ts-node',
   '-r', 'tsconfig-paths/register',

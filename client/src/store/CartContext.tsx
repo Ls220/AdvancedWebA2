@@ -42,7 +42,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cartItems))
   }, [cartItems])
@@ -52,7 +51,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existingItem = prevItems.find((item) => item.id === product.id)
 
       if (existingItem) {
-        // Update quantity if item already exists
         return prevItems.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item,
         )

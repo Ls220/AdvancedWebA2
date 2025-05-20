@@ -45,7 +45,7 @@ export default function WomensCollectionPage() {
       >
         <h1 className="text-4xl font-bold mb-4 text-white">Women's Collection</h1>
         <p className="text-white/70 mb-8">
-          Explore our curated collection of women's fashion, where style meets comfort.
+          Explore our  collection of women's clothing, where style meets comfort.
         </p>
       </motion.div>
       

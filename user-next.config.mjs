@@ -2,11 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'standalone', // Optimizes for serverless environments like Netlify
+  output: 'standalone', 
   images: {
-    domains: ['placeholder.com', 'via.placeholder.com'], // Add your image domains here
-    unoptimized: true, // Required for Netlify deployment
-    remotePatterns: [
+    domains: ['placeholder.com', 'via.placeholder.com'], 
+    unoptimized: true, 
+    remotePatterns: [                                                               // REMOVE IDIOT CONFIG USELESS AS HOSTING FAILED
       {
         protocol: 'https',
         hostname: '**',
@@ -26,8 +26,8 @@ const nextConfig = {
       {
         source: '/api/:path*',
         destination: process.env.NODE_ENV === 'development' 
-          ? 'http://localhost:5000/api/:path*' // Development API URL
-          : '/api/:path*', // Production API URL (handled by Vercel serverless functions)
+          ? 'http://localhost:5000/api/:path*' 
+          : '/api/:path*', 
       },
     ];
   },

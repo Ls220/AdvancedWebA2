@@ -34,8 +34,7 @@ export default function UsersManagementPage() {
   const [roleFilter, setRoleFilter] = useState("all")
 
   useEffect(() => {
-    // In a real app, fetch this data from your API
-    // For now, we'll use mock data
+   
     const mockUsers: User[] = [
       {
         id: "USR-001",
@@ -91,7 +90,6 @@ export default function UsersManagementPage() {
   useEffect(() => {
     let result = users
 
-    // Apply search filter
     if (searchTerm) {
       result = result.filter(
         (user) =>
@@ -100,7 +98,6 @@ export default function UsersManagementPage() {
       )
     }
 
-    // Apply role filter
     if (roleFilter !== "all") {
       result = result.filter((user) => user.role === roleFilter)
     }

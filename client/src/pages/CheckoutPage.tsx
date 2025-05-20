@@ -17,10 +17,8 @@ import { useAuth } from "../store/AuthContext"
 import { formatCurrency } from "../utils/formatCurrency"
 import { Loader2 } from "lucide-react"
 
-// Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "")
 
-// Define form validation schema
 const checkoutSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
   lastName: z.string().min(2, "Last name is required"),

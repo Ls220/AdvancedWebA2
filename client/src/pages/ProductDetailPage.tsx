@@ -134,7 +134,7 @@ export default function ProductDetailPage() {
           ],
         }
 
-        // Set the first image as current
+        
         setCurrentImage(mockProduct.images?.[0] || mockProduct.image)
 
         setTimeout(() => {

@@ -25,8 +25,6 @@ interface UserProfile {
   email: string
   orders: Order[]
 }
-
-// Mock user data - replace with actual API call in production
 const mockUserProfile: UserProfile = {
   name: "John Doe",
   email: "john@example.com",
@@ -79,10 +77,9 @@ export default function ProfilePage() {
   }
 
   useEffect(() => {
-    // Simulate API call - replace with actual API call in production
+    
     const fetchProfile = async () => {
       try {
-        // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 1000))
         setProfile(mockUserProfile)
       } catch (error) {

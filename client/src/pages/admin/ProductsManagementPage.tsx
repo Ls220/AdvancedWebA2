@@ -37,8 +37,7 @@ export default function ProductsManagementPage() {
   const [categoryFilter, setCategoryFilter] = useState("all")
 
   useEffect(() => {
-    // In a real app, fetch this data from your API
-    // For now, we'll use mock data
+  
     const mockProducts: Product[] = [
       {
         id: "PROD-001",
@@ -104,7 +103,6 @@ export default function ProductsManagementPage() {
   useEffect(() => {
     let result = products
 
-    // Apply search filter
     if (searchTerm) {
       result = result.filter(
         (product) =>
@@ -113,7 +111,6 @@ export default function ProductsManagementPage() {
       )
     }
 
-    // Apply category filter
     if (categoryFilter !== "all") {
       result = result.filter((product) => product.category === categoryFilter)
     }

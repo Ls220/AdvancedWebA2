@@ -8,11 +8,11 @@ import * as THREE from "three"
 function Model({ modelPath, color }) {
   const { scene } = useGLTF(modelPath)
 
-  // Apply color to the model if provided
+  // Apply color to the model (also apply mats)
   if (color) {
     scene.traverse((child) => {
       if (child.isMesh && child.material) {
-        // Clone the material to avoid affecting other instances
+        
         child.material = child.material.clone()
         child.material.color = new THREE.Color(color)
       }

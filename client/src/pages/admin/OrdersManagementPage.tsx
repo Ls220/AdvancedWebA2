@@ -28,8 +28,6 @@ export default function OrdersManagementPage() {
   const [statusFilter, setStatusFilter] = useState("all")
 
   useEffect(() => {
-    // In a real app, fetch this data from your API
-    // For now, we'll use mock data
     const mockOrders: Order[] = [
       {
         id: "ORD-001",
@@ -78,7 +76,7 @@ export default function OrdersManagementPage() {
         payment: "paid",
         total: 59.99,
         items: 1,
-      },
+      },                                          //mock data until database config is sorted
       {
         id: "ORD-005",
         customer: {
@@ -100,7 +98,7 @@ export default function OrdersManagementPage() {
   useEffect(() => {
     let result = orders
 
-    // Apply search filter
+  // Apply search filter
     if (searchTerm) {
       result = result.filter(
         (order) =>

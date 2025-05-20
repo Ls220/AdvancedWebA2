@@ -9,9 +9,9 @@ export async function POST(request: Request) {
   try {
     const { amount } = await request.json()
 
-    // Create a PaymentIntent with the order amount and currency
+  
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
+      amount: Math.round(amount * 100), // Convert to pennnies 
       currency: 'gbp',
       automatic_payment_methods: {
         enabled: true,

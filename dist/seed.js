@@ -6,8 +6,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
+
+        
     });
-};
+};                                              //generated tesst code for seeding test
 var __generator = (this && this.__generator) || function (thisArg, body) {
     var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
     return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
@@ -133,17 +135,17 @@ function seed() {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 4, , 5]);
-                    // Connect to database
+                
                     return [4 /*yield*/, (0, mongodb_1.connectToDatabase)()
                         // Clear existing products
                     ];
                 case 1:
-                    // Connect to database
+            
                     _a.sent();
-                    // Clear existing products
+    
                     return [4 /*yield*/, Product_1.default.deleteMany({})];
                 case 2:
-                    // Clear existing products
+                
                     _a.sent();
                     console.log('Cleared existing products');
                     return [4 /*yield*/, Product_1.default.insertMany(products)];

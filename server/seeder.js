@@ -8,13 +8,11 @@ const Order = require("./models/Order")
 // Load env vars
 dotenv.config({ path: "./config/config.env" })
 
-// Connect to DB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 
-// Sample data
 const users = [
   {
     name: "Admin User",
@@ -89,24 +87,18 @@ const products = [
   },
 ]
 
-// Import data
 const importData = async () => {
   try {
-    // Clear existing data
+    // Clear data
     await User.deleteMany()
     await Product.deleteMany()
     await Order.deleteMany()
 
-    // Create users
     const createdUsers = await User.create(users)
     const adminUser = createdUsers[0]._id
-
-    // Add admin user to products
     const sampleProducts = products.map((product) => {
       return { ...product, user: adminUser }
     })
-
-    // Create products
     await Product.create(sampleProducts)
 
     console.log("Data Imported!".green.inverse)
@@ -116,8 +108,6 @@ const importData = async () => {
     process.exit(1)
   }
 }
-
-// Delete data
 const destroyData = async () => {
   try {
     await User.deleteMany()
@@ -131,8 +121,6 @@ const destroyData = async () => {
     process.exit(1)
   }
 }
-
-// Run script based on command line argument
 if (process.argv[2] === "-d") {
   destroyData()
 } else {

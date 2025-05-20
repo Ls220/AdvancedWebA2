@@ -33,32 +33,26 @@ export default function RegisterForm() {
     e.preventDefault()
     setError('')
 
-    // Validate required fields
     if (!formData.name || !formData.email || !formData.password) {
       setError('Name, email, and password are required')
       return
     }
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
       return
     }
 
-    // Validate password length
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long')
       return
     }
-
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(formData.email)) {
       setError('Please enter a valid email address')
       return
     }
 
-    // Validate UK phone number
     const phoneRegex = /^(\+44\s?|0)?[1-9]\d{9}$/
     if (formData.phoneNumber && !phoneRegex.test(formData.phoneNumber)) {
       setError('Please enter a valid UK phone number (e.g., 07123456789 or +447123456789)')

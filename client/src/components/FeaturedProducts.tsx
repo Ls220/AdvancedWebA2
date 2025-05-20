@@ -79,7 +79,7 @@ export default function FeaturedProducts() {
             onSale: false,
             isNew: true,
             image: "/placeholder.svg?height=300&width=300&text=Mini+Skirt",
-            model3d: "/assets/3d/maid_uniform.glb", // Using the maid uniform model as a placeholder for skirt
+            model3d: "/assets/3d/maid_uniform.glb", // using a placeholder model for now   ##TO DO ADD NEW MODEL AND CONFIGURE ROUTING
             category: "women",
             subcategory: "skirts",
             colors: [

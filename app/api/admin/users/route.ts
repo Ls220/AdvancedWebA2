@@ -5,22 +5,25 @@ import { UserModel } from '@/models/User'
 
 export async function GET(request: NextRequest) {
   try {
-    // Get token from Authorization header
     const token = request.headers.get('Authorization')?.replace('Bearer ', '')
     if (!token) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Verify token and check admin role
+
+
+                                                        
     const decoded = await verifyJwtToken(token)
-    if (!decoded || decoded.role !== 'admin') {
+    if (!decoded || decoded.role !== 'admin') {             // CHECK TOKEN VALIDITY & CONFIRM ADMIN ROLE
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Connect to database
+  
     await connectToDatabase()
 
-    // Fetch all users except current admin, excluding passwords
+
+
+    
     const users = await UserModel.find({ _id: { $ne: decoded.userId } })
       .select('-password')
       .lean()

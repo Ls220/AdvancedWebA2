@@ -2,21 +2,41 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ShoppingCart, User, Shield } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { ShoppingCart, User, Shield, Menu } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
+
+const navLinks = [
+  { href: '/mens-collection', label: "Men's Collection" },
+  { href: '/womens-collection', label: "Women's Collection" },
+  { href: '/kids-collection', label: "Kids Collection" },
+  { href: '/about', label: "About Us" }
+]
 
 export default function Navbar() {
   const pathname = usePathname()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
     const userRole = localStorage.getItem('userRole')
     setIsLoggedIn(!!token)
     setIsAdmin(userRole === 'admin')
+
+    // Get cart count from localStorage
+    const storedCart = localStorage.getItem('cart')
+    if (storedCart) {
+      try {
+        const cart = JSON.parse(storedCart)
+        setCartCount(cart.length)
+      } catch (e) {
+        console.warn('Failed to parse cart data')
+      }
+    }
   }, [])
 
   const isActive = (path: string) => pathname === path
@@ -30,42 +50,21 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-white font-bold text-xl">
+            <Link href="/" className="text-white font-bold text-xl tracking-tight hover:text-white/90 transition-colors">
               Lister's Store
             </Link>
             <div className="hidden md:flex space-x-6">
-              <Link
-                href="/mens-collection"
-                className={`text-white/80 hover:text-white transition-colors ${
-                  isActive('/mens-collection') ? 'text-white font-medium' : ''
-                }`}
-              >
-                Men's Collection
-              </Link>
-              <Link
-                href="/womens-collection"
-                className={`text-white/80 hover:text-white transition-colors ${
-                  isActive('/womens-collection') ? 'text-white font-medium' : ''
-                }`}
-              >
-                Women's Collection
-              </Link>
-              <Link
-                href="/kids-collection"
-                className={`text-white/80 hover:text-white transition-colors ${
-                  isActive('/kids-collection') ? 'text-white font-medium' : ''
-                }`}
-              >
-                Kids Collection
-              </Link>
-              <Link
-                href="/about"
-                className={`text-white/80 hover:text-white transition-colors ${
-                  isActive('/about') ? 'text-white font-medium' : ''
-                }`}
-              >
-                About Us
-              </Link>
+              {navLinks.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-white/80 hover:text-white transition-colors ${
+                    isActive(link.href) ? 'text-white font-medium' : ''
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -110,13 +109,52 @@ export default function Navbar() {
                 size="icon"
               >
                 <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                  0
-                </span>
+                {cartCount > 0 && (
+                  <motion.span 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center"
+                  >
+                    {cartCount}
+                  </motion.span>
+                )}
               </Button>
             </Link>
+
+            <Button
+              variant="ghost"
+              className="md:hidden text-white hover:bg-white/20"
+              size="icon"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
           </div>
         </div>
+
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden py-4 space-y-4"
+            >
+              {navLinks.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`block text-white/80 hover:text-white transition-colors ${
+                    isActive(link.href) ? 'text-white font-medium' : ''
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.nav>
   )

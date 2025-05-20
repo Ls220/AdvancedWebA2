@@ -19,10 +19,10 @@ export default function CartPage() {
   const [promoCode, setPromoCode] = useState("")
   const [isApplyingPromo, setIsApplyingPromo] = useState(false)
 
-  // Calculate cart summary
+  // CAL OF CART TOTAL PRICE
   const subtotal = totalPrice
   const shipping = cartItems.length > 0 ? 5.99 : 0
-  const tax = subtotal * 0.08 // 8% tax rate
+  const tax = subtotal * 0.08 // applying a taxt rate 2 product
   const total = subtotal + shipping + tax
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {

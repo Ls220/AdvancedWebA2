@@ -9,7 +9,7 @@ import { CartProvider } from "./store/CartContext"
 import { AuthProvider } from "./store/AuthContext"
 import ErrorBoundary from "./components/ErrorBoundary"
 
-// Lazy load pages for better performance
+// Lazy loading 
 const HomePage = lazy(() => import("./pages/HomePage"))
 const ProductsPage = lazy(() => import("./pages/ProductsPage"))
 const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"))

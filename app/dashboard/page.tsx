@@ -71,7 +71,7 @@ const DashboardPage = () => {
         console.error('Failed to fetch user data:', error)
         setError(error.message || 'Failed to load user data')
         
-        // If token is invalid, redirect to login
+        // Invalid token, throws error
         if (error.message.includes('Invalid token') || error.message.includes('Unauthorized')) {
           localStorage.removeItem('token')
           localStorage.removeItem('user')

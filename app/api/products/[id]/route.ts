@@ -7,29 +7,25 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Connect to database
+  
     await connectToDatabase()
 
-    // Validate product ID
+    
     if (!params?.id) {
       return NextResponse.json(
         { error: 'Product ID is required' },
         { status: 400 }
       )
     }
-
-    // Find product by ID
     const product = await Product.findById(params.id)
 
-    // If product not found, return 404
+
     if (!product) {
       return NextResponse.json(
         { error: `Product not found with ID: ${params.id}` },
         { status: 404 }
       )
     }
-
-    // Return product data
     return NextResponse.json({ product })
 
   } catch (error) {
@@ -49,7 +45,6 @@ export async function PUT(
     // Connect to database
     await connectToDatabase()
 
-    // Validate product ID
     if (!params?.id) {
       return NextResponse.json(
         { error: 'Product ID is required' },
@@ -59,7 +54,6 @@ export async function PUT(
 
     const body = await request.json()
 
-    // Update product
     const product = await Product.findByIdAndUpdate(
       params.id,
       body,

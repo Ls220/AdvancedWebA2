@@ -7,30 +7,35 @@ import { Suspense } from "react"
 import { LoadingSpinner } from "./LoadingSpinner"
 import Image from 'next/image'
 
+// Scale values for different product types
+const MODEL_SCALES = {
+  shoes: 4,
+  hat: 3,
+  kids: 1.5,
+  skirt: 0.8,
+  coat: 0.8,
+  default: 2
+}
+
 function Model({ modelPath }: { modelPath: string }) {
-  try {
-    const { scene } = useGLTF(modelPath)
-    
-    // Scale adjustment based on model type
-    let scale = 2;
-    if (modelPath.includes('Shoes')) scale = 4;
-    if (modelPath.includes('hat')) scale = 3;
-    if (modelPath.includes('kids')) scale = 1.5;
-    if (modelPath.includes('skirt') || modelPath.includes('coat')) scale = 0.8;
-    
-    return (
-      <Stage environment="city" intensity={0.5}>
-        <primitive 
-          object={scene} 
-          scale={scale}
-          rotation={[0, Math.PI / 4, 0]}
-        />
-      </Stage>
-    )
-  } catch (err) {
-    console.error('Error loading model:', err)
-    throw err;
-  }
+  const { scene } = useGLTF(modelPath)
+  
+  let scale = MODEL_SCALES.default
+  Object.entries(MODEL_SCALES).forEach(([key, value]) => {
+    if (modelPath.toLowerCase().includes(key)) {
+      scale = value
+    }
+  })
+  
+  return (
+    <Stage environment="city" intensity={0.5}>
+      <primitive 
+        object={scene} 
+        scale={scale}
+        rotation={[0, Math.PI / 4, 0]}
+      />
+    </Stage>
+  )
 }
 
 interface ProductViewer3DProps {
@@ -45,6 +50,8 @@ export default function ProductViewer3D({ modelPath, fallbackImage }: ProductVie
   const [imageError, setImageError] = useState(false)
 
   useEffect(() => {
+    let isMounted = true
+
     const checkModelAvailability = async () => {
       if (!modelPath) {
         setShouldShow3D(false)
@@ -61,17 +68,24 @@ export default function ProductViewer3D({ modelPath, fallbackImage }: ProductVie
           throw new Error('Model not found')
         }
 
-        setShouldShow3D(true)
+        if (isMounted) {
+          setShouldShow3D(true)
+        }
       } catch (err) {
-        console.error('Error checking 3D model:', err)
-        setShouldShow3D(false)
-        setError(err as Error)
+        console.error('Failed to load 3D model:', err)
+        if (isMounted) {
+          setShouldShow3D(false)
+          setError(err as Error)
+        }
       } finally {
-        setIsLoading(false)
+        if (isMounted) {
+          setIsLoading(false)
+        }
       }
     }
 
     checkModelAvailability()
+    return () => { isMounted = false }
   }, [modelPath])
 
   if (!shouldShow3D || error) {

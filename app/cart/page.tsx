@@ -12,8 +12,6 @@ import { Loader2, ShoppingBag, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { Separator } from '@/components/ui/separator'
 import type { CartItem } from '@/lib/CartContext'
-
-// Initialize Stripe
 const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 console.log('Stripe Public Key available:', !!stripePublicKey)
 const stripePromise = loadStripe(stripePublicKey!)
@@ -23,7 +21,12 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
-  // Calculate order summary
+  
+  
+
+
+
+  
   const subtotal = total
   const shipping = items.length > 0 ? 5.99 : 0
   const orderTotal = subtotal + shipping
@@ -42,7 +45,7 @@ export default function CartPage() {
       setIsLoading(true)
       console.log('Starting checkout process...')
       
-      // Create Stripe checkout session
+      // FOR STRIPE CHECKPOUT (WILL OPEN MAKE SURE TO ADD STRIPE API KEY TO PRODJCET VARIABLES)
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
@@ -51,7 +54,8 @@ export default function CartPage() {
         body: JSON.stringify({
           items: items.map((item: CartItem) => ({
             ...item,
-            price: Math.round(item.price * 100) // Convert to pence for Stripe
+            price: Math.round(item.price * 100) 
+            // CONVERSION FOR CASH VALUE
           }))
         }),
       })
@@ -76,8 +80,12 @@ export default function CartPage() {
         return
       }
 
-      // Redirect to Stripe checkout
+  
       console.log('Initializing Stripe...')
+  
+  
+  
+  
       const stripe = await stripePromise
       console.log('Stripe initialized:', !!stripe)
       
@@ -120,7 +128,7 @@ export default function CartPage() {
         <div className="text-center space-y-6">
           <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground" />
           <h1 className="text-3xl font-bold">Your Cart is Empty</h1>
-          <p className="text-muted-foreground">Looks like you haven't added anything to your cart yet.</p>
+          <p className="text-muted-foreground">Looks like you haven't added anything to your cart yet</p>
           <Button asChild className="mt-4">
             <Link href="/products">
               <ArrowLeft className="mr-2 h-4 w-4" />

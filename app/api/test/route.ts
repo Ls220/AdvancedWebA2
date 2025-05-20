@@ -14,11 +14,11 @@ export async function GET() {
     console.log('Testing MongoDB connection...')
     const { db } = await connectToDatabase()
     
-    // Get all collections
+
     const collections = await db.listCollections().toArray()
     const collectionNames = collections.map(c => c.name)
     
-    // Get counts for each collection
+
     const collectionCounts = await Promise.all(
       collectionNames.map(async (name) => {
         const count = await db.collection(name).countDocuments()
@@ -26,7 +26,7 @@ export async function GET() {
       })
     )
     
-    // Get sample data from products collection if it exists
+    // Get sample data 
     let sampleProducts: Product[] = []
     if (collectionNames.includes('products')) {
       const docs = await db.collection('products')

@@ -236,7 +236,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return false
       }
 
-      // Update token if a new one is returned
       if (data.token) {
         localStorage.setItem("token", data.token)
       }

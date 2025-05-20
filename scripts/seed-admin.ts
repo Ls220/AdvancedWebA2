@@ -1,12 +1,13 @@
 import { connectToDatabase } from '../lib/mongodb'
 import bcrypt from 'bcryptjs'
 
+// Hosting failed on VPS remove
+
 async function seedAdmin() {
   try {
     console.log('Connecting to database...')
     const { db } = await connectToDatabase()
-    
-    // Admin user data
+  
     const adminData = {
       email: 'admin@listers.com',
       password: await bcrypt.hash('Ls04_2024', 10),
@@ -16,7 +17,6 @@ async function seedAdmin() {
       updatedAt: new Date()
     }
 
-    // Check if admin already exists
     const existingAdmin = await db.collection('users').findOne({ email: adminData.email })
     
     if (existingAdmin) {
