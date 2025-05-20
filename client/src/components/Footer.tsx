@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-lg font-semibold mb-4">EcoShop</h3>
+            <h3 className="text-lg font-semibold mb-4">Listers Shop</h3>
             <p className="text-sm text-muted-foreground">
               Your one-stop shop for high-quality products with an immersive shopping experience.
             </p>
@@ -86,7 +86,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} EcoShop. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} ListersShop. All rights reserved.</p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Terms of Service

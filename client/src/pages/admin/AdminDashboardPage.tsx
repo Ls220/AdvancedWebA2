@@ -17,8 +17,6 @@ export default function AdminDashboardPage() {
   })
 
   useEffect(() => {
-    // In a real app, fetch this data from your API
-    // For now, we'll use mock data
     const mockData = {
       totalSales: 15789.99,
       totalOrders: 124,
