@@ -27,13 +27,12 @@ interface AdminStore {
   deleteProduct: (id: string) => void
 }
 
-// Mock data
 const mockUsers: User[] = [
   {
     id: '1',
     name: 'John Doe',
     email: 'john@example.com',
-    role: 'customer',
+    role: 'customer', // MOCK DATA                    //MOCK USERS remove once MongoDB is back online
     createdAt: new Date('2024-01-01')
   },
   {

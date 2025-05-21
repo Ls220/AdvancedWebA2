@@ -1,12 +1,12 @@
 import { createProxyMiddleware } from "http-proxy-middleware"
 import type { NextApiRequest, NextApiResponse } from "next"
 
-// proxy instance
+
 const apiProxy = createProxyMiddleware({
   target: process.env.API_URL || "http://localhost:5000",
   changeOrigin: true,
   pathRewrite: {
-    "^/api": "/api", // API path rewrite
+    "^/api": "/api", 
   },
 })
 
